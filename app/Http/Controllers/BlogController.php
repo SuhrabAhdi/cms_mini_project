@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Category;
+use App\Models\Post;
 use Illuminate\Http\Request;
-
 class BlogController extends Controller
 {
     /**
@@ -13,7 +13,11 @@ class BlogController extends Controller
      */
     public function index()
     {
-        return view('blog.index');
+//         Post::find(12)->categories()->detach();
+//         Post::destroy(12);
+// //    $post = Post::find(26);
+// //       
+ return view('blog.index');
     }
 
     /**
@@ -23,7 +27,9 @@ class BlogController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::all();
+
+        return view('test',compact('categories'));
     }
 
     /**
@@ -34,7 +40,14 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $categories = $request->categories;
+    $post = new Post();
+    $post->title = $request->title;
+    $post->content = $request->content;
+    $post->image = "url";
+    $post->save();
+
+    $post->categories()->sync($categories);
     }
 
     /**
