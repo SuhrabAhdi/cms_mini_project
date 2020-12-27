@@ -25,3 +25,4 @@ require __DIR__.'/auth.php';
 
 
 Route::resource('/blog',BlogController::class);
+Route::get('filter/{category}',[BlogController::class,'filter'])->name("category.filter");

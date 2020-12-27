@@ -14,7 +14,7 @@ class CategoryTableSeeder extends Seeder
      */
     public function run()
     {
-        Category::factory(5)
+        Category::factory(15)
         ->has(Post::factory()->count(rand(2,6)))
         ->create();
     }

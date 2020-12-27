@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Session;
 class BlogController extends Controller
 {
     /**
@@ -13,11 +14,12 @@ class BlogController extends Controller
      */
     public function index()
     {
+        $posts = Post::orderBy('created_at','desc')->get();
 //         Post::find(12)->categories()->detach();
 //         Post::destroy(12);
 // //    $post = Post::find(26);
 // //       
- return view('blog.index');
+ return view('blog.index',compact('posts'));
     }
 
     /**
@@ -27,9 +29,8 @@ class BlogController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
-
-        return view('test',compact('categories'));
+  
+        return view('blog.create');
     }
 
     /**
@@ -40,14 +41,30 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
-        $categories = $request->categories;
-    $post = new Post();
-    $post->title = $request->title;
-    $post->content = $request->content;
-    $post->image = "url";
-    $post->save();
-
-    $post->categories()->sync($categories);
+       
+        $this->validatedData();
+    $imageName = time().'.'.$request->image->extension();
+    
+      $post =  Post::create([
+      'title'=>$request->title,
+      'content'=>$request->content,
+      'image'=>$imageName
+      ]);
+    // $categories = $request->categories;
+    // $post = new Post();
+    // $post->title = $request->title;
+    // $post->content = $request->content;
+    // $post->image = "url";
+    // $post->save();
+    // $post->categories()->sync($categories);
+   if($post)
+   {
+    $request->image->move(public_path('images'),$imageName);
+    return redirect()->route("blog.index")->with('status','Post has been created!');
+   }
+    else 
+   return redirect()->route("blog.create")->with('error','Failed to create!');
+    
     }
 
     /**
@@ -56,9 +73,10 @@ class BlogController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Post $blog)
     {
-        //
+
+        return $blog;
     }
 
     /**
@@ -90,8 +108,33 @@ class BlogController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $blog)
     {
-        //
+        // $post = Post::find($id);
+        // $post->categories()->detach();
+        //Post::destroy($id);
+       
+        $blog->categories()->detach();
+        $blog->delete();
+
+        return redirect()->route('blog.index')->with('status','Post has been deleted!');
+    }
+
+    public function filter($category){
+        Session::put("id",$category);
+        $posts = Post::whereHas("categories",function($category){
+            $category->where("id",Session::pull("id"));
+        })->get();
+
+        return view('blog.index',compact('posts'));
+    }
+
+
+    private function validatedData(){
+        return request()->validate([
+            "title"=>"required",
+            "content"=>"required",
+            "image"=>"required|image|mimes:jpg,jpeg,png,gif|max:1024"
+        ]);
     }
 }
