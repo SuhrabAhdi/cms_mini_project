@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-
+<link rel="stylesheet" href="{{asset('css/app.css')}}">
     <style>
     ul li {
         list-style-type:none;
@@ -31,13 +31,16 @@
     <br>
 
     <img src="images/{{$post->image}}" alt="">
-    <p>{{$post->content}}</p>
+    <p>{{Str::limit($post->content,150)}}</p>
       <form action="{{route('blog.destroy',$post)}}" method="post">
       @csrf
       @method('DELETE')
 
       <input type="submit" value="Delete">
       </form>
+      <a href="{{route('blog.edit',$post)}}">Update</a>
     @endforeach
+
+    {{$posts}}
 </body>
 </html>

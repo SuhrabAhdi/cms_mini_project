@@ -12,5 +12,6 @@
   <li>{{$cat->name}}</li>
   @endforeach
   </ul>  
+  
 </body>
 </html>

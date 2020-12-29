@@ -5,6 +5,7 @@ use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Session;
+use File;
 class BlogController extends Controller
 {
     /**
@@ -14,7 +15,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $posts = Post::orderBy('created_at','desc')->get();
+        $posts = Post::orderBy('created_at','desc')->simplePaginate(5);
 //         Post::find(12)->categories()->detach();
 //         Post::destroy(12);
 // //    $post = Post::find(26);
@@ -30,7 +31,7 @@ class BlogController extends Controller
     public function create()
     {
   
-        return view('blog.create');
+        return view('blog.form');
     }
 
     /**
@@ -43,7 +44,7 @@ class BlogController extends Controller
     {
        
         $this->validatedData();
-    $imageName = time().'.'.$request->image->extension();
+        $imageName = time().'.'.$request->image->extension();
     
       $post =  Post::create([
       'title'=>$request->title,
@@ -85,9 +86,9 @@ class BlogController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $blog)
     {
-        //
+        return view("blog.form",['post'=>$blog]);
     }
 
     /**
@@ -97,9 +98,39 @@ class BlogController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Post $blog)
     {
-        //
+       $this->validatedData();
+       $imageName = "";
+       $model = null;
+       if($request->image != ''){
+           $image_path = 'images/'.$blog['image'];
+
+           if(File::exists($image_path)){
+               File::delete($image_path);
+           }
+           $imageName = time().'.'.$request->image->extension();
+
+           $blog->update([
+               'title'=>$request->title,
+               'content'=>$request->content,
+               'image'=>$imageName
+           ]);
+        $model = $request->image->move(public_path('images'),$imageName);
+       } 
+       else
+        {
+       $model = $blog->update($request->except('image'));
+       }
+
+      
+
+
+        if($model)
+        return redirect()->route('blog.index')->with('status','Post updated');
+  
+        else
+        return redirect()->route('blog.edit',$data)->with('error','could not update the post');
     }
 
     /**
@@ -115,8 +146,12 @@ class BlogController extends Controller
         //Post::destroy($id);
        
         $blog->categories()->detach();
-        $blog->delete();
+        $path = 'images/'.$blog['image'];
 
+       if(File::exists($path))
+         File::delete($path);
+        
+       $blog->delete();
         return redirect()->route('blog.index')->with('status','Post has been deleted!');
     }
 
@@ -134,7 +169,7 @@ class BlogController extends Controller
         return request()->validate([
             "title"=>"required",
             "content"=>"required",
-            "image"=>"required|image|mimes:jpg,jpeg,png,gif|max:1024"
+            // "image"=>"required|image|mimes:jpg,jpeg,png,gif|max:1024"
         ]);
     }
 }
