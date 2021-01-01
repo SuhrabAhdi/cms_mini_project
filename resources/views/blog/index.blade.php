@@ -39,6 +39,7 @@
       <input type="submit" value="Delete">
       </form>
       <a href="{{route('blog.edit',$post)}}">Update</a>
+      <p><b>{{$post->getDate()}}</b></p>
     @endforeach
 
     {{$posts}}

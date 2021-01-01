@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Category;
-use App\Models\Post;
-use Illuminate\Http\Request;
-use Session;
 use File;
+use Session;
+use App\Models\Post;
+use App\Models\Category;
+use Illuminate\Http\Request;
+use App\Http\Requests\RequestBlog;
+
 class BlogController extends Controller
 {
     /**
@@ -13,6 +15,10 @@ class BlogController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+     public function __construct(){
+         $this->middleware("auth");
+     }
     public function index()
     {
         $posts = Post::orderBy('created_at','desc')->simplePaginate(5);
@@ -20,7 +26,7 @@ class BlogController extends Controller
 //         Post::destroy(12);
 // //    $post = Post::find(26);
 // //       
- return view('blog.index',compact('posts'));
+         return view('blog.index',compact('posts'));
     }
 
     /**
@@ -40,17 +46,16 @@ class BlogController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(RequestBlog $request)
     {
        
-        $this->validatedData();
-        $imageName = time().'.'.$request->image->extension();
-    
-      $post =  Post::create([
-      'title'=>$request->title,
-      'content'=>$request->content,
-      'image'=>$imageName
-      ]);
+
+     $imageName = time().'.'.$request->image->extension();
+
+      $post =  Post::create($request->except("image"));
+
+      $post->update(["image"=>$imageName]);
+      $request->image->move(public_path('images'),$imageName);
     // $categories = $request->categories;
     // $post = new Post();
     // $post->title = $request->title;
@@ -58,13 +63,13 @@ class BlogController extends Controller
     // $post->image = "url";
     // $post->save();
     // $post->categories()->sync($categories);
-   if($post)
-   {
-    $request->image->move(public_path('images'),$imageName);
-    return redirect()->route("blog.index")->with('status','Post has been created!');
-   }
-    else 
-   return redirect()->route("blog.create")->with('error','Failed to create!');
+//    if($post)
+//    {
+//     $request->image->move(public_path('images'),$imageName);
+      return redirect()->route("blog.index")->with('status','Post has been created!');
+//    }
+//     else 
+//    return redirect()->route("blog.create")->with('error','Failed to create!');
     
     }
 
@@ -98,9 +103,9 @@ class BlogController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $blog)
+    public function update(RequestBlog $request, Post $blog)
     {
-       $this->validatedData();
+
        $imageName = "";
        $model = null;
        if($request->image != ''){
@@ -122,9 +127,6 @@ class BlogController extends Controller
         {
        $model = $blog->update($request->except('image'));
        }
-
-      
-
 
         if($model)
         return redirect()->route('blog.index')->with('status','Post updated');
@@ -165,11 +167,11 @@ class BlogController extends Controller
     }
 
 
-    private function validatedData(){
-        return request()->validate([
-            "title"=>"required",
-            "content"=>"required",
-            // "image"=>"required|image|mimes:jpg,jpeg,png,gif|max:1024"
-        ]);
-    }
+    // private function validatedData(){
+    //     return request()->validate([
+    //         "title"=>"required",
+    //         "content"=>"required",
+    //      "image"=>"required|image|mimes:jpg,jpeg,png,gif|max:1024"
+    //     ]);
+    // }
 }

@@ -12,4 +12,8 @@ class Post extends Model
     public function categories(){
         return $this->belongsToMany(Category::class);
     }
+
+    public function getDate(){
+        return $this->created_at->diffForHumans();
+    }
 }
