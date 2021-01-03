@@ -16,17 +16,17 @@ class BlogController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-     public function __construct(){
-         $this->middleware("auth");
-     }
+    //  public function __construct(){
+    //      $this->middleware("auth");
+    //  }
     public function index()
     {
         $posts = Post::orderBy('created_at','desc')->simplePaginate(5);
 //         Post::find(12)->categories()->detach();
 //         Post::destroy(12);
 // //    $post = Post::find(26);
-// //       
-         return view('blog.index',compact('posts'));
+   $trash = false;
+         return view('blog.index',compact('posts','trash'));
     }
 
     /**
@@ -165,7 +165,21 @@ class BlogController extends Controller
 
         return view('blog.index',compact('posts'));
     }
+    public function trash(){
+        $posts = Post::onlyTrashed()->get();
+        $trash = true;
+        return view('blog.index',compact('posts','trash'));
+    }
 
+    public function restore($id){
+   Post::withTrashed()->where("id",$id)->restore();
+        return redirect(route('blog.trash'));
+    }
+
+    public function remove($id){
+        Post::withTrashed()->where("id",$id)->forceDelete();
+        return redirect(route('blog.trash'));
+    }
 
     // private function validatedData(){
     //     return request()->validate([
@@ -174,4 +188,6 @@ class BlogController extends Controller
     //      "image"=>"required|image|mimes:jpg,jpeg,png,gif|max:1024"
     //     ]);
     // }
+
+
 }
