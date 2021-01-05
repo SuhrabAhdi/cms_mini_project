@@ -21,12 +21,13 @@ class BlogController extends Controller
     //  }
     public function index()
     {
-        $posts = Post::orderBy('created_at','desc')->simplePaginate(5);
+        $posts = Post::orderBy('created_at','desc')->get();
+        $categories = Category::all()->take(6);
 //         Post::find(12)->categories()->detach();
 //         Post::destroy(12);
 // //    $post = Post::find(26);
-   $trash = false;
-         return view('blog.index',compact('posts','trash'));
+
+         return view('blog.index',compact('posts','categories'));
     }
 
     /**
@@ -48,12 +49,11 @@ class BlogController extends Controller
      */
     public function store(RequestBlog $request)
     {
-       
-
+   
      $imageName = time().'.'.$request->image->extension();
-
-      $post =  Post::create($request->except("image"));
-
+   
+     $post = auth()->user()->posts()->create($request->except("image"));
+// 
       $post->update(["image"=>$imageName]);
       $request->image->move(public_path('images'),$imageName);
     // $categories = $request->categories;

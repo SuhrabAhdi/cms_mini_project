@@ -11,11 +11,16 @@ class Post extends Model
     use HasFactory;
     use SoftDeletes;
    protected $guarded = [];
+
     public function categories(){
         return $this->belongsToMany(Category::class);
     }
 
     public function getDate(){
         return $this->created_at->diffForHumans();
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 }

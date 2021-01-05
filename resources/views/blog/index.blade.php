@@ -1,65 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        table{
-        with:70%;
-        border: 1px solid #333;
-        border-collapse:collapse;
-        
-    }
-td , th {
-        border: 1px solid #333;
-        padding:8px;
-    }
+@extends('layouts.default')
 
-    </style>
-</head>
-<body>
-@if($trash)
-<h1>View all trashes</h1>
-<hr>
-<a href="{{route('blog.index')}}">View blog posts</a><br>
-@else
-<h1>View all posts</h1>
-<hr>
-<a href="{{route('blog.trash')}}">View trashes</a><br>
-    <a href="{{route('blog.create')}}">Add new posts</a><br>
-    @endif
-    <table>
-        <tr>
-        <th>#</th>
-        <th>Title</th>
-        <th>content</th>
-        <th>Actions</th>
-        </tr>
-        @php $no =0 @endphp
-@foreach($posts as $post)
-        <tr>
-            <td>{{++$no}}</td>
-            <td>{{$post->title}}</td>
-            <td>{{Str::limit($post->content,100)}}</td>
- 
- @if($trash)
-      <td>
-      <a href="{{route('blog.restore',$post)}}">Restore</a>
-      <a href="{{route('blog.remove',$post)}}">Delete</a>
-      </td>
-      @else
-      <td>
-      <a href="{{route('blog.edit',$post)}}">Edit</a>
-       <form action="{{route('blog.destroy',$post)}}" method="post">
-       @csrf
-       @method('DELETE')
-       <input type="submit" value="Delete">
-       </form>
-      </td>
-      @endif
-        </tr>
-        @endforeach
-    </table>
-</body>
-</html>
+@section('title','Home')
+
+@section('content')
+<div class="container mx-auto flex flex-wrap py-6">
+
+<!-- Posts Section -->
+<section class="w-full md:w-2/3 flex flex-col items-center px-3">
+    @foreach($posts as $post)
+    <article class="flex flex-col shadow my-4">
+        <!-- Article Image -->
+        <a href="#" class="hover:opacity-75">
+            <img src="images/{{$post->image}}">
+        </a>
+        <div class="bg-white flex flex-col justify-start p-6">
+            @foreach($post->categories as $cat)
+            <a href="#" class="text-blue-700 text-sm font-bold uppercase pb-4">{{$cat->name}}</a>
+            @endforeach
+
+            <a href="#" class="text-3xl font-bold hover:text-gray-700 pb-4">{{$post->title}}</a>
+            <p href="#" class="text-sm pb-3">
+                By <a href="#" class="font-semibold hover:text-gray-800">{{$post->user->name}}</a>, Published on {{$post->getDate()}}
+            </p>
+            <a href="#" class="pb-6">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis porta dui. Ut eu iaculis massa. Sed ornare ligula lacus, quis iaculis dui porta volutpat. In sit amet posuere magna..</a>
+            <a href="#" class="uppercase text-gray-800 hover:text-black">Continue Reading <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </article>
+@endforeach
+  
+
+  
+
+
+</section>
+
+
+</div>
+
+@endsection

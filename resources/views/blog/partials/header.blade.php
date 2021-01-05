@@ -10,18 +10,20 @@
             </nav>
 
             <div class="flex items-center text-lg no-underline text-white pr-6">
-                <a class="" href="#">
-                    <i class="fab fa-facebook"></i>
+              
+            @auth
+            <a class="" href="/dashboard">
+                    <i class="">Dashboard</i>
+             </a>
+              @else
+              <a class="mr-2" href="{{route('login')}}">
+                    <i >Login</i>
                 </a>
-                <a class="pl-6" href="#">
-                    <i class="fab fa-instagram"></i>
+
+                <a class="" href="{{route('register')}}">
+                    <i class="fab fa-facebook">Register</i>
                 </a>
-                <a class="pl-6" href="#">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a class="pl-6" href="#">
-                    <i class="fab fa-linkedin"></i>
-                </a>
+              @endif
             </div>
         </div>
 
