@@ -16,9 +16,10 @@ class CreateProfilesTable extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('expertise');
-            $table->string('eduction_level');
-            $table->text('desc');
+            $table->string('expertise')->nullable();
+            $table->string('eduction_level')->nullable();
+            $table->string('image')->nullable();
+            $table->text('desc')->nullable();
             $table->timestamps();
             $table->foreignId('user_id')->constrained()->index();
         });

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ProfileController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,7 +15,7 @@ use App\Http\Controllers\BlogController;
 */
 
 Route::get('/', function () {
-    return view('admin');
+    return view('welcome');
 });
 
 Route::get('/dashboard', function () {
@@ -29,3 +30,5 @@ Route::get('filter/{category}',[BlogController::class,'filter'])->name("category
 Route::get('/recycle',[BlogController::class,'trash'])->name('blog.trash');
 Route::get('/recycle/{post}',[BlogController::class,'restore'])->name('blog.restore');
 Route::get('/recycle-remove/{post}',[BlogController::class,'remove'])->name('blog.remove');
+Route::get('profile/edit/{user}',[ProfileController::class,'edit'])->name('profile.edit');
+Route::put('profile/update/{user}',[ProfileController::class,'update'])->name('profile.update');

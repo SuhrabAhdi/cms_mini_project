@@ -45,4 +45,14 @@ class User extends Authenticatable
 
         return $this->hasOne(Profile::class);
     }
+
+
+    public static function boot(){
+        parent::boot();
+        static::created(function($user){
+     $user->profile()->create([
+         "name"=>$user->name
+     ]);
+        });
+    }
 }
