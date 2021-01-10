@@ -25,8 +25,6 @@ class PostFactory extends Factory
             'title'=>$this->faker->sentence,
             'content'=>$this->faker->paragraphs(7,true),
             'image'=>$this->faker->imageUrl(650,450),
-
-
         ];
     }
 }

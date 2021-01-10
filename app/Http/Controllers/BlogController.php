@@ -37,7 +37,7 @@ class BlogController extends Controller
      */
     public function create()
     {
-  
+        $this->authorize('create',Post::class);
         return view('blog.form');
     }
 
@@ -81,8 +81,8 @@ class BlogController extends Controller
      */
     public function show(Post $blog)
     {
-
-        return $blog;
+       // $this->authorize('view',$blog);
+        return view('blog.show',compact('blog'));
     }
 
     /**
